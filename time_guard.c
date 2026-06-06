@@ -3,11 +3,11 @@
 #include <time.h>
 #include <unistd.h>
 
-#define START_HOUR 9
-#define END_HOUR 18
+#define START_HOUR 7
+#define END_HOUR 9
 #define FILE_PATH "secret_file.txt"
 
-int is_access_allowed() {
+int main() {
     time_t rawtime;
     struct tm *timeinfo;
 
@@ -16,19 +16,14 @@ int is_access_allowed() {
 
     int current_hour = timeinfo->tm_hour;
 
-    if (current_hour >= START_HOUR && current_hour < END_HOUR) {
-        return 1;
-    }
-    return 0;
-}
+    printf("[*] Поточний час системи: %02d:%02d\n", current_hour, timeinfo->tm_min);
 
-int main() {
-    if (!is_access_allowed()) {
-        fprintf(stderr, "[!] Помилка: Доступ до файлу дозволено лише у робочий час (з %02d:00 до %02d:00).\n", START_HOUR, END_HOUR);
+    if (current_hour < START_HOUR || current_hour >= END_HOUR) {
+        fprintf(stderr, "[!] ДОСТУП ЗАБОРОНЕНО: Читання дозволено тільки з %02d:00 до %02d:00.\n", START_HOUR, END_HOUR);
         return EXIT_FAILURE;
     }
 
-    printf("[+] Доступ дозволено. Читання файлу...\n");
+    printf("[+] ДОСТУП ДОЗВОЛЕНО! Читання файлу:\n\n");
     
     FILE *file = fopen(FILE_PATH, "r");
     if (!file) {
@@ -41,6 +36,7 @@ int main() {
         putchar(ch);
     }
     fclose(file);
+    printf("\n");
 
     return EXIT_SUCCESS;
 }
